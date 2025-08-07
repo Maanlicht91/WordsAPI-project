@@ -3,9 +3,17 @@ const asyncWrapper = require("../errors/asyncWrapper");
 const { StatusCodes } = require("http-status-codes");
 const { BadRequestError, UnauthorizedError } = require("../errors");
 const { signInToken } = require("../utils/authentication");
+const filterObj = require("../utils/filterObj");
 
 exports.register = asyncWrapper(async (req, res, next) => {
-  const newUser = await User.create(req.body);
+  const filteredBody = filterObj(
+    req.body,
+    "username",
+    "email",
+    "password",
+    "role"
+  );
+  const newUser = await User.create(filteredBody);
 
   const token = signInToken(newUser);
 
